@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIN Check International — Migration QA Report</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="accent-stripe"></div>
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg> Migration QA Report</div>
+    <h1>VIN Check International — Country Pages</h1>
+    <p>WordPress to Payload CMS migration <span>&middot;</span> 48 countries <span>&middot;</span> Generated Feb 11, 2026</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card green"><div class="label">Migrated</div><div class="value">48/48</div><div class="sub">All countries successful</div></div>
+  <div class="stat-card green"><div class="label">Headings Matched</div><div class="value">2,252</div><div class="sub">Across all pages</div></div>
+  <div class="stat-card blue"><div class="label">Title &amp; Description</div><div class="value">100%</div><div class="sub">All match WordPress</div></div>
+  <div class="stat-card amber"><div class="label">Needs Attention</div><div class="value">9</div><div class="sub">Structural heading diffs</div></div>
+</div>
+
+<div class="banners">
+  <div class="banner banner-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+    <div class="b-content">
+      <div class="b-title">9 countries have structural heading differences</div>
+      <div class="b-text">These pages have different WP layouts (extra sections, large pages with 100+ headings). <strong>Italy</strong> — 15 headings only in WP. <strong>Luxembourg &amp; Belgium</strong> — 9 extra headings in Payload each. <strong>Qatar</strong> — 7 headings only in WP. <strong>South Africa, Ghana, NZ, Estonia, Puerto Rico</strong> — 1–2 heading diffs each.</div>
+    </div>
+  </div>
+  <div class="banner banner-info">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    <div class="b-content">
+      <div class="b-title">4 design improvements applied during migration</div>
+      <div class="b-text">
+        <strong>Variant-4 Tools Block</strong> — Upgraded from variant-3 to preserve original WP heading tags (H3/H4) inside richText.<br>
+        <strong>Final CTA repositioned</strong> — "Run a VIN Check" section auto-moved after FAQs with tertiary background styling.<br>
+        <strong>Fake testimonial removal</strong> — Guatemala &amp; Dominican Republic had testimonial cards filtered out by pattern detection.<br>
+        <strong>FAQ dedup</strong> — Chile had FAQ Q&amp;A pairs appearing as both icon-card grid and FAQ accordion; duplicates removed.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="Search countries..." autocomplete="off"></div>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All <span class="count">48</span></button>
+    <button class="filter-btn" data-filter="clean" onclick="setFilter('clean')">Clean <span class="count">39</span></button>
+    <button class="filter-btn" data-filter="issues" onclick="setFilter('issues')">Issues <span class="count">9</span></button>
+  </div>
+  <div class="view-toggle">
+    <button id="btn-table" class="active" onclick="setView('table')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Table</button>
+    <button id="btn-cards" onclick="setView('cards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Cards</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="view-table" class="table-wrap">
+    <table><thead><tr><th>#</th><th>Country</th><th>WP ID</th><th class="center">Status</th><th class="center">Title</th><th class="center">Description</th><th class="center">Headings</th><th>Compare</th></tr></thead><tbody id="table-body"></tbody></table>
+    <div class="no-results hidden" id="no-results-table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No countries match your search</p></div>
+  </div>
+  <div id="view-cards" class="cards-grid hidden"></div>
+  <div class="no-results hidden" id="no-results-cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No countries match your search</p></div>
+</div>
+
+<script>
+const DATA = [
+  { slug: "germany", wpId: 140817, headings: 41, ok: true },
+  { slug: "netherlands", wpId: 257835, headings: 42, ok: true },
+  { slug: "cambodia", wpId: 139734, headings: 41, ok: true },
+  { slug: "australia", wpId: 140877, headings: 40, ok: true },
+  { slug: "mexico", wpId: 151941, headings: 40, ok: true },
+  { slug: "armenia", wpId: 140878, headings: 40, ok: true },
+  { slug: "lithuania", wpId: 140866, headings: 40, ok: true },
+  { slug: "romania", wpId: 141217, headings: 41, ok: true },
+  { slug: "moldova", wpId: 140864, headings: 40, ok: true },
+  { slug: "belarus", wpId: 135378, headings: 40, ok: true },
+  { slug: "uk", wpId: 140858, headings: 40, ok: true },
+  { slug: "nicaragua", wpId: 131369, headings: 40, ok: true },
+  { slug: "jordan", wpId: 140827, headings: 41, ok: true },
+  { slug: "bahamas", wpId: 140926, headings: 41, ok: true },
+  { slug: "costa-rica", wpId: 140829, headings: 40, ok: true },
+  { slug: "colombia", wpId: 135382, headings: 39, ok: true },
+  { slug: "ukraine", wpId: 140857, headings: 39, ok: true },
+  { slug: "latvia", wpId: 140867, headings: 39, ok: true },
+  { slug: "switzerland", wpId: 135380, headings: 40, ok: true },
+  { slug: "portugal", wpId: 140861, headings: 39, ok: true },
+  { slug: "ireland", wpId: 140868, headings: 41, ok: true },
+  { slug: "greece", wpId: 140869, headings: 39, ok: true },
+  { slug: "canada", wpId: 140874, headings: 41, ok: true },
+  { slug: "denmark", wpId: 140872, headings: 41, ok: true },
+  { slug: "yemen", wpId: 44478, headings: 41, ok: true },
+  { slug: "uganda", wpId: 135374, headings: 41, ok: true },
+  { slug: "argentina", wpId: 135384, headings: 40, ok: true },
+  { slug: "croatia", wpId: 140873, headings: 40, ok: true },
+  { slug: "senegal", wpId: 44631, headings: 41, ok: true },
+  { slug: "kazakhstan", wpId: 135361, headings: 40, ok: true },
+  { slug: "sudan", wpId: 44647, headings: 40, ok: true },
+  { slug: "iraq", wpId: 140821, headings: 39, ok: true },
+  { slug: "honduras", wpId: 86246, headings: 40, ok: true },
+  { slug: "guatemala", wpId: 131473, headings: 40, ok: true },
+  { slug: "chile", wpId: 131448, headings: 40, ok: true },
+  { slug: "bolivia", wpId: 131413, headings: 40, ok: true },
+  { slug: "dominican-republic", wpId: 140831, headings: 41, ok: true },
+  { slug: "azerbaijan", wpId: 135368, headings: 40, ok: true },
+  { slug: "el-salvador", wpId: 131350, headings: 40, ok: true },
+  { slug: "italy", wpId: 151738, headings: 65, ok: false, issue: "15 headings only in WP, 2 only in Payload — extra sections not extracted" },
+  { slug: "south-africa", wpId: 140812, headings: 70, ok: false, issue: "2 WP / 2 Payload diffs — different layout structure" },
+  { slug: "luxembourg", wpId: 140865, headings: 117, ok: false, issue: "9 extra headings in Payload — supplemented sections" },
+  { slug: "belgium", wpId: 140876, headings: 113, ok: false, issue: "9 extra headings in Payload — supplemented sections" },
+  { slug: "qatar", wpId: 140824, headings: 100, ok: false, issue: "7 only in WP, 1 only in Payload — sections not extracted" },
+  { slug: "ghana", wpId: 144232, headings: 101, ok: false, issue: "1 extra heading in Payload" },
+  { slug: "nz", wpId: 135376, headings: 40, ok: false, issue: "1 H2 missing — not extracted by shared transformer" },
+  { slug: "estonia", wpId: 141216, headings: 39, ok: false, issue: "1 extra H2 in Payload — testimonial section heading" },
+  { slug: "puerto-rico", wpId: 140830, headings: 39, ok: false, issue: "1 H3 missing — tool heading not extracted" }
+];
+const wpBase = "https://detailedvehiclehistory.com/vin-check/";
+const payloadBase = "https://dvh.vehiclehistory.report/vin-check/";
+const svgCheck = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8.5l3.5 3.5 7-7"/></svg>`;
+const svgWarn = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M8 5v4M8 11h.01"/></svg>`;
+const svgExt = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 9v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M9 2h5v5M6.5 9.5 14 2"/></svg>`;
+const special = { uk: "UK", nz: "NZ" };
+function titleCase(slug) { if (special[slug]) return special[slug]; return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "); }
+let currentFilter = "all";
+function getFiltered(items) {
+  if (currentFilter === "clean") return items.filter(d => d.ok);
+  if (currentFilter === "issues") return items.filter(d => !d.ok);
+  return items;
+}
+function renderTable(items) {
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
+  if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  tbody.innerHTML = items.map((d, i) => `<tr data-slug="${d.slug}" class="${d.ok ? '' : 'has-issues'}"><td class="num">${i+1}</td><td><span class="brand-name">${titleCase(d.slug)}</span></td><td><span class="wp-id">${d.wpId}</span></td><td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center">${d.ok ? `<span class="badge badge-blue">${d.headings} ok</span>` : `<span class="heading-detail"><span class="badge badge-amber">${svgWarn} ${d.headings}</span><span class="tooltip"><div class="tooltip-row"><span class="t-label">Issue</span><span class="t-val warn">${d.issue}</span></div></span></span>`}</td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`).join("");
+}
+function renderCards(items) {
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
+  if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  grid.innerHTML = items.map(d => `<div class="card ${d.ok ? '' : 'has-issues'}" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div><div class="card-stats"><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div><div class="card-stat ${d.ok ? 'ok' : 'warn'}"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div></div>${d.issue ? `<div class="card-issue"><strong>Note:</strong> ${d.issue}</div>` : ''}<div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`).join("");
+}
+function render() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  let items = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q) || String(d.wpId).includes(q)) : DATA;
+  items = getFiltered(items); renderTable(items); renderCards(items);
+}
+document.getElementById("search").addEventListener("input", render);
+function setFilter(filter) { currentFilter = filter; document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter)); render(); }
+function setView(view) {
+  document.getElementById("btn-table").classList.toggle("active", view === "table");
+  document.getElementById("btn-cards").classList.toggle("active", view === "cards");
+  document.getElementById("view-table").classList.toggle("hidden", view !== "table");
+  document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
+}
+render();
+</script>
+</body>
+</html>
