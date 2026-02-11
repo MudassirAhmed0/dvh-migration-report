@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIN Check State — Migration QA Report</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="accent-stripe"></div>
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg> Migration QA Report</div>
+    <h1>VIN Check — State Pages</h1>
+    <p>WordPress to Payload CMS migration <span>&middot;</span> 50 states <span>&middot;</span> Generated Feb 11, 2026</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card green"><div class="label">Migrated</div><div class="value">50/50</div><div class="sub">All states successful</div></div>
+  <div class="stat-card green"><div class="label">Headings Matched</div><div class="value">1,886</div><div class="sub">Across all pages</div></div>
+  <div class="stat-card blue"><div class="label">Title &amp; Description</div><div class="value">100%</div><div class="sub">All match WordPress</div></div>
+  <div class="stat-card amber"><div class="label">Needs Attention</div><div class="value">5</div><div class="sub">Minor heading diffs</div></div>
+</div>
+
+<div class="banners">
+  <div class="banner banner-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+    <div class="b-content">
+      <div class="b-title">5 states need attention</div>
+      <div class="b-text">
+        &bull; <strong>California</strong> — 1 H3 missing: "Use the Report as a Negotiation Tool"<br>
+        &bull; <strong>Georgia</strong> — text changed: "Sample Report: 2G2WP552761221562" &rarr; "Check VINs From Other Countries"<br>
+        &bull; <strong>Indiana</strong> — 1 H2 missing: "ID Laws Related to VIN Checks"<br>
+        &bull; <strong>Rhode Island</strong> — H3 promoted to H2: "Classic VIN Lookup in Rhode Island Made Easy with our Tool"<br>
+        &bull; <strong>South Dakota</strong> — H3 promoted to H2: "Hear what our Customers are Saying"
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="Search states..." autocomplete="off"></div>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All <span class="count">50</span></button>
+    <button class="filter-btn" data-filter="clean" onclick="setFilter('clean')">Clean <span class="count">45</span></button>
+    <button class="filter-btn" data-filter="issues" onclick="setFilter('issues')">Issues <span class="count">5</span></button>
+  </div>
+  <div class="view-toggle">
+    <button id="btn-table" class="active" onclick="setView('table')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Table</button>
+    <button id="btn-cards" onclick="setView('cards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Cards</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="view-table" class="table-wrap">
+    <table><thead><tr><th>#</th><th>State</th><th>WP ID</th><th class="center">Status</th><th class="center">Title</th><th class="center">Description</th><th class="center">Headings</th><th>Compare</th></tr></thead><tbody id="table-body"></tbody></table>
+    <div class="no-results hidden" id="no-results-table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No states match your search</p></div>
+  </div>
+  <div id="view-cards" class="cards-grid hidden"></div>
+  <div class="no-results hidden" id="no-results-cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No states match your search</p></div>
+</div>
+
+<script>
+const DATA = [
+  { slug: "alabama", wpId: 218854, headings: 40, ok: true },
+  { slug: "alaska", wpId: 218380, headings: 39, ok: true },
+  { slug: "arizona", wpId: 218374, headings: 39, ok: true },
+  { slug: "arkansas", wpId: 218410, headings: 43, ok: true },
+  { slug: "california", wpId: 218431, headings: 45, ok: false, issue: "1 H3 missing" },
+  { slug: "colorado", wpId: 218452, headings: 44, ok: true },
+  { slug: "connecticut", wpId: 218467, headings: 42, ok: true },
+  { slug: "delaware", wpId: 218481, headings: 44, ok: true },
+  { slug: "florida", wpId: 218521, headings: 45, ok: true },
+  { slug: "georgia", wpId: 140870, headings: 41, ok: false, issue: "1 H3 text changed" },
+  { slug: "hawaii", wpId: 218568, headings: 45, ok: true },
+  { slug: "idaho", wpId: 218610, headings: 43, ok: true },
+  { slug: "illinois", wpId: 218619, headings: 37, ok: true },
+  { slug: "indiana", wpId: 218643, headings: 47, ok: false, issue: "1 H2 missing" },
+  { slug: "iowa", wpId: 218663, headings: 42, ok: true },
+  { slug: "kansas", wpId: 218687, headings: 38, ok: true },
+  { slug: "kentucky", wpId: 218719, headings: 42, ok: true },
+  { slug: "louisiana", wpId: 218750, headings: 43, ok: true },
+  { slug: "maine", wpId: 218776, headings: 41, ok: true },
+  { slug: "maryland", wpId: 218791, headings: 43, ok: true },
+  { slug: "massachusetts", wpId: 218811, headings: 42, ok: true },
+  { slug: "michigan", wpId: 218817, headings: 44, ok: true },
+  { slug: "minnesota", wpId: 218826, headings: 42, ok: true },
+  { slug: "mississippi", wpId: 218836, headings: 42, ok: true },
+  { slug: "missouri", wpId: 218845, headings: 42, ok: true },
+  { slug: "montana", wpId: 218402, headings: 43, ok: true },
+  { slug: "nebraska", wpId: 218415, headings: 43, ok: true },
+  { slug: "nevada", wpId: 218360, headings: 43, ok: true },
+  { slug: "new-hampshire", wpId: 218449, headings: 43, ok: true },
+  { slug: "new-jersey", wpId: 218519, headings: 31, ok: true },
+  { slug: "new-mexico", wpId: 218538, headings: 32, ok: true },
+  { slug: "new-york", wpId: 218566, headings: 32, ok: true },
+  { slug: "north-carolina", wpId: 218637, headings: 31, ok: true },
+  { slug: "north-dakota", wpId: 218654, headings: 31, ok: true },
+  { slug: "ohio", wpId: 218671, headings: 32, ok: true },
+  { slug: "oklahoma", wpId: 218695, headings: 32, ok: true },
+  { slug: "oregon", wpId: 218726, headings: 32, ok: true },
+  { slug: "pennsylvania", wpId: 218879, headings: 32, ok: true },
+  { slug: "rhode-island", wpId: 218888, headings: 31, ok: false, issue: "H3 promoted to H2" },
+  { slug: "south-carolina", wpId: 218907, headings: 32, ok: true },
+  { slug: "south-dakota", wpId: 218948, headings: 31, ok: false, issue: "H3 promoted to H2" },
+  { slug: "tennessee", wpId: 219266, headings: 32, ok: true },
+  { slug: "texas", wpId: 218986, headings: 34, ok: true },
+  { slug: "utah", wpId: 219055, headings: 31, ok: true },
+  { slug: "vermont", wpId: 219004, headings: 31, ok: true },
+  { slug: "virginia", wpId: 219013, headings: 32, ok: true },
+  { slug: "washington", wpId: 219022, headings: 32, ok: true },
+  { slug: "west-virginia", wpId: 219031, headings: 31, ok: true },
+  { slug: "wisconsin", wpId: 219040, headings: 31, ok: true },
+  { slug: "wyoming", wpId: 219049, headings: 31, ok: true }
+];
+const wpBase = "https://detailedvehiclehistory.com/vin-check/";
+const payloadBase = "https://dvh.vehiclehistory.report/vin-check/";
+const svgCheck = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8.5l3.5 3.5 7-7"/></svg>`;
+const svgWarn = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M8 5v4M8 11h.01"/></svg>`;
+const svgExt = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 9v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M9 2h5v5M6.5 9.5 14 2"/></svg>`;
+function titleCase(slug) { return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "); }
+let currentFilter = "all";
+function getFiltered(items) {
+  if (currentFilter === "clean") return items.filter(d => d.ok);
+  if (currentFilter === "issues") return items.filter(d => !d.ok);
+  return items;
+}
+function renderTable(items) {
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
+  if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  tbody.innerHTML = items.map((d, i) => `<tr data-slug="${d.slug}" class="${d.ok ? '' : 'has-issues'}"><td class="num">${i+1}</td><td><span class="state-name">${titleCase(d.slug)}</span></td><td><span class="wp-id">${d.wpId}</span></td><td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center">${d.ok ? `<span class="badge badge-blue">${d.headings} ok</span>` : `<span class="heading-detail"><span class="badge badge-amber">${svgWarn} ${d.headings}</span><span class="tooltip"><div class="tooltip-row"><span class="t-label">Issue</span><span class="t-val warn">${d.issue}</span></div></span></span>`}</td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`).join("");
+}
+function renderCards(items) {
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
+  if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  grid.innerHTML = items.map(d => `<div class="card ${d.ok ? '' : 'has-issues'}" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div><div class="card-stats"><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div><div class="card-stat ${d.ok ? 'ok' : 'warn'}"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div></div>${d.issue ? `<div class="card-issue"><strong>Note:</strong> ${d.issue}</div>` : ''}<div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`).join("");
+}
+function render() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  let items = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q) || String(d.wpId).includes(q)) : DATA;
+  items = getFiltered(items); renderTable(items); renderCards(items);
+}
+document.getElementById("search").addEventListener("input", render);
+function setFilter(filter) { currentFilter = filter; document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter)); render(); }
+function setView(view) {
+  document.getElementById("btn-table").classList.toggle("active", view === "table");
+  document.getElementById("btn-cards").classList.toggle("active", view === "cards");
+  document.getElementById("view-table").classList.toggle("hidden", view !== "table");
+  document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
+}
+render();
+</script>
+</body>
+</html>
