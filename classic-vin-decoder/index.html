@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classic VIN Decoder — Migration QA Report</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="accent-stripe"></div>
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg> Migration QA Report</div>
+    <h1>Classic VIN Decoder — Brand Pages</h1>
+    <p>WordPress to Payload CMS migration <span>&middot;</span> 74 brands <span>&middot;</span> Generated Feb 11, 2026</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card green"><div class="label">Migrated</div><div class="value">74/74</div><div class="sub">All brands successful</div></div>
+  <div class="stat-card green"><div class="label">Headings Matched</div><div class="value">2,345</div><div class="sub">0 mismatches across all pages</div></div>
+  <div class="stat-card blue"><div class="label">Title &amp; Description</div><div class="value">100%</div><div class="sub">All match WordPress</div></div>
+  <div class="stat-card green"><div class="label">Issues Found</div><div class="value">0</div><div class="sub">Clean migration</div></div>
+</div>
+
+<div class="banners">
+  <div class="banner banner-success">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+    <div class="b-content">
+      <div class="b-title">All clear — zero heading issues</div>
+      <div class="b-text">All 74 brand pages have perfect heading matches between WordPress and Payload. Title and description fields match on every page. QA can verify visually using the compare links below.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="Search brands..." autocomplete="off"></div>
+  <div class="view-toggle">
+    <button id="btn-table" class="active" onclick="setView('table')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Table</button>
+    <button id="btn-cards" onclick="setView('cards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Cards</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="view-table" class="table-wrap">
+    <table><thead><tr><th>#</th><th>Brand</th><th>WP ID</th><th class="center">Status</th><th class="center">Title</th><th class="center">Description</th><th class="center">Headings</th><th>Compare</th></tr></thead><tbody id="table-body"></tbody></table>
+    <div class="no-results hidden" id="no-results-table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No brands match your search</p></div>
+  </div>
+  <div id="view-cards" class="cards-grid hidden"></div>
+  <div class="no-results hidden" id="no-results-cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No brands match your search</p></div>
+</div>
+
+<script>
+const DATA = [
+  { slug: "ac", wpId: 113576, headings: 30 },
+  { slug: "acura", wpId: 113601, headings: 30 },
+  { slug: "airstream", wpId: 113625, headings: 31 },
+  { slug: "alfa-romeo", wpId: 113656, headings: 30 },
+  { slug: "allstate", wpId: 114762, headings: 30 },
+  { slug: "am-general", wpId: 114781, headings: 33 },
+  { slug: "amc", wpId: 113788, headings: 30 },
+  { slug: "amphicar", wpId: 113303, headings: 30 },
+  { slug: "aston-martin", wpId: 113411, headings: 34 },
+  { slug: "auburn", wpId: 113440, headings: 31 },
+  { slug: "audi", wpId: 113335, headings: 37 },
+  { slug: "austin", wpId: 113538, headings: 30 },
+  { slug: "austin-healey", wpId: 113459, headings: 32 },
+  { slug: "autobianchi", wpId: 113481, headings: 30 },
+  { slug: "avanti", wpId: 113500, headings: 30 },
+  { slug: "backdraft-racing", wpId: 113519, headings: 32 },
+  { slug: "beetle", wpId: 113695, headings: 36 },
+  { slug: "bentley", wpId: 113807, headings: 32 },
+  { slug: "bmw", wpId: 113677, headings: 31 },
+  { slug: "bsa", wpId: 113905, headings: 33 },
+  { slug: "bugatti", wpId: 113924, headings: 36 },
+  { slug: "buick", wpId: 113717, headings: 33 },
+  { slug: "cadillac", wpId: 113740, headings: 34 },
+  { slug: "campagna", wpId: 113943, headings: 31 },
+  { slug: "chevy", wpId: 113763, headings: 30 },
+  { slug: "chrysler", wpId: 113786, headings: 31 },
+  { slug: "cushman", wpId: 113964, headings: 31 },
+  { slug: "datsun", wpId: 114105, headings: 35 },
+  { slug: "de-tomaso", wpId: 114185, headings: 32 },
+  { slug: "delahaye", wpId: 114125, headings: 31 },
+  { slug: "desoto", wpId: 114157, headings: 30 },
+  { slug: "dodge", wpId: 113853, headings: 30 },
+  { slug: "ducati", wpId: 114210, headings: 32 },
+  { slug: "ferrari", wpId: 114242, headings: 30 },
+  { slug: "fiat", wpId: 113866, headings: 34 },
+  { slug: "ford", wpId: 113289, headings: 30 },
+  { slug: "gm", wpId: 113962, headings: 31 },
+  { slug: "hudson", wpId: 114264, headings: 30 },
+  { slug: "hummer", wpId: 114362, headings: 30 },
+  { slug: "international", wpId: 114381, headings: 30 },
+  { slug: "jaguar", wpId: 114082, headings: 31 },
+  { slug: "jeep", wpId: 113557, headings: 29 },
+  { slug: "lamborghini", wpId: 113886, headings: 31 },
+  { slug: "lancia", wpId: 114047, headings: 31 },
+  { slug: "land-rover", wpId: 114158, headings: 31 },
+  { slug: "lexus", wpId: 114341, headings: 31 },
+  { slug: "lincoln", wpId: 114205, headings: 33 },
+  { slug: "maserati", wpId: 114066, headings: 33 },
+  { slug: "mazda", wpId: 114086, headings: 33 },
+  { slug: "mclaren", wpId: 114411, headings: 32 },
+  { slug: "mercedes-benz", wpId: 113357, headings: 32 },
+  { slug: "mercury", wpId: 114259, headings: 32 },
+  { slug: "mini", wpId: 114295, headings: 32 },
+  { slug: "mitsubishi", wpId: 114431, headings: 32 },
+  { slug: "mopar", wpId: 114302, headings: 29 },
+  { slug: "morgan", wpId: 114460, headings: 33 },
+  { slug: "mustang", wpId: 114011, headings: 33 },
+  { slug: "nissan", wpId: 114511, headings: 31 },
+  { slug: "oldsmobile", wpId: 114325, headings: 31 },
+  { slug: "packard", wpId: 114537, headings: 32 },
+  { slug: "plymouth", wpId: 114360, headings: 35 },
+  { slug: "pontiac", wpId: 114410, headings: 36 },
+  { slug: "porsche", wpId: 114476, headings: 32 },
+  { slug: "renault", wpId: 114607, headings: 31 },
+  { slug: "rolls-royce", wpId: 114594, headings: 32 },
+  { slug: "shelby", wpId: 114680, headings: 32 },
+  { slug: "studebaker", wpId: 114626, headings: 30 },
+  { slug: "subaru", wpId: 114645, headings: 30 },
+  { slug: "toyota", wpId: 114695, headings: 31 },
+  { slug: "triumph", wpId: 114557, headings: 29 },
+  { slug: "volkswagen", wpId: 114712, headings: 33 },
+  { slug: "willys", wpId: 114664, headings: 34 },
+  { slug: "winnebago", wpId: 114737, headings: 33 },
+  { slug: "yamaha", wpId: 114576, headings: 32 }
+];
+const wpBase = "https://detailedvehiclehistory.com/classic-vin-decoder/";
+const payloadBase = "https://dvh.vehiclehistory.report/classic-vin-decoder/";
+const svgCheck = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8.5l3.5 3.5 7-7"/></svg>`;
+const svgExt = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 9v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M9 2h5v5M6.5 9.5 14 2"/></svg>`;
+function titleCase(slug) {
+  const special = { bmw: "BMW", gm: "GM", bsa: "BSA", amc: "AMC", ac: "AC" };
+  if (special[slug]) return special[slug];
+  return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+}
+function renderTable(items) {
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
+  if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  tbody.innerHTML = items.map((d, i) => `<tr data-slug="${d.slug}"><td class="num">${i+1}</td><td><span class="brand-name">${titleCase(d.slug)}</span></td><td><span class="wp-id">${d.wpId}</span></td><td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-blue">${d.headings} ok</span></td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`).join("");
+}
+function renderCards(items) {
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
+  if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  grid.innerHTML = items.map(d => `<div class="card" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div><div class="card-stats"><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div><div class="card-stat ok"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div></div><div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`).join("");
+}
+document.getElementById("search").addEventListener("input", function () {
+  const q = this.value.toLowerCase().trim();
+  const filtered = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q) || String(d.wpId).includes(q)) : DATA;
+  renderTable(filtered); renderCards(filtered);
+});
+function setView(view) {
+  document.getElementById("btn-table").classList.toggle("active", view === "table");
+  document.getElementById("btn-cards").classList.toggle("active", view === "cards");
+  document.getElementById("view-table").classList.toggle("hidden", view !== "table");
+  document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
+}
+renderTable(DATA); renderCards(DATA);
+</script>
+</body>
+</html>
