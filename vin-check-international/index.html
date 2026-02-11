@@ -28,19 +28,18 @@
   <div class="banner banner-amber">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
     <div class="b-content">
-      <div class="b-title">9 countries have structural heading differences</div>
-      <div class="b-text">These pages have different WP layouts (extra sections, large pages with 100+ headings). <strong>Italy</strong> — 15 headings only in WP. <strong>Luxembourg &amp; Belgium</strong> — 9 extra headings in Payload each. <strong>Qatar</strong> — 7 headings only in WP. <strong>South Africa, Ghana, NZ, Estonia, Puerto Rico</strong> — 1–2 heading diffs each.</div>
-    </div>
-  </div>
-  <div class="banner banner-info">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-    <div class="b-content">
-      <div class="b-title">4 design improvements applied during migration</div>
+      <div class="b-title">9 countries need attention</div>
       <div class="b-text">
-        <strong>Variant-4 Tools Block</strong> — Upgraded from variant-3 to preserve original WP heading tags (H3/H4) inside richText.<br>
-        <strong>Final CTA repositioned</strong> — "Run a VIN Check" section auto-moved after FAQs with tertiary background styling.<br>
-        <strong>Fake testimonial removal</strong> — Guatemala &amp; Dominican Republic had testimonial cards filtered out by pattern detection.<br>
-        <strong>FAQ dedup</strong> — Chile had FAQ Q&amp;A pairs appearing as both icon-card grid and FAQ accordion; duplicates removed.
+        <strong>Structural heading diffs:</strong><br>
+        &bull; <strong>Italy</strong> — 15 headings only in WP, 2 only in Payload<br>
+        &bull; <strong>Luxembourg</strong> — 9 extra headings in Payload<br>
+        &bull; <strong>Belgium</strong> — 9 extra headings in Payload<br>
+        &bull; <strong>Qatar</strong> — 7 headings only in WP, 1 only in Payload<br>
+        &bull; <strong>South Africa</strong> — 2 WP / 2 Payload diffs<br>
+        &bull; <strong>Ghana</strong> — 1 extra heading in Payload<br>
+        &bull; <strong>NZ</strong> — 1 H2 missing<br>
+        &bull; <strong>Estonia</strong> — 1 extra H2 in Payload<br>
+        &bull; <strong>Puerto Rico</strong> — 1 H3 missing
       </div>
     </div>
   </div>
@@ -109,15 +108,15 @@ const DATA = [
   { slug: "dominican-republic", wpId: 140831, headings: 41, ok: true },
   { slug: "azerbaijan", wpId: 135368, headings: 40, ok: true },
   { slug: "el-salvador", wpId: 131350, headings: 40, ok: true },
-  { slug: "italy", wpId: 151738, headings: 65, ok: false, issue: "15 headings only in WP, 2 only in Payload — extra sections not extracted" },
-  { slug: "south-africa", wpId: 140812, headings: 70, ok: false, issue: "2 WP / 2 Payload diffs — different layout structure" },
-  { slug: "luxembourg", wpId: 140865, headings: 117, ok: false, issue: "9 extra headings in Payload — supplemented sections" },
-  { slug: "belgium", wpId: 140876, headings: 113, ok: false, issue: "9 extra headings in Payload — supplemented sections" },
-  { slug: "qatar", wpId: 140824, headings: 100, ok: false, issue: "7 only in WP, 1 only in Payload — sections not extracted" },
-  { slug: "ghana", wpId: 144232, headings: 101, ok: false, issue: "1 extra heading in Payload" },
-  { slug: "nz", wpId: 135376, headings: 40, ok: false, issue: "1 H2 missing — not extracted by shared transformer" },
-  { slug: "estonia", wpId: 141216, headings: 39, ok: false, issue: "1 extra H2 in Payload — testimonial section heading" },
-  { slug: "puerto-rico", wpId: 140830, headings: 39, ok: false, issue: "1 H3 missing — tool heading not extracted" }
+  { slug: "italy", wpId: 151738, headings: 65, ok: false, issue: "WP:15 extra, PL:2 extra" },
+  { slug: "south-africa", wpId: 140812, headings: 70, ok: false, issue: "WP:2 extra, PL:2 extra" },
+  { slug: "luxembourg", wpId: 140865, headings: 117, ok: false, issue: "PL:9 extra headings" },
+  { slug: "belgium", wpId: 140876, headings: 113, ok: false, issue: "PL:9 extra headings" },
+  { slug: "qatar", wpId: 140824, headings: 100, ok: false, issue: "WP:7 extra, PL:1 extra" },
+  { slug: "ghana", wpId: 144232, headings: 101, ok: false, issue: "PL:1 extra heading" },
+  { slug: "nz", wpId: 135376, headings: 40, ok: false, issue: "1 H2 missing" },
+  { slug: "estonia", wpId: 141216, headings: 39, ok: false, issue: "1 extra H2 in Payload" },
+  { slug: "puerto-rico", wpId: 140830, headings: 39, ok: false, issue: "1 H3 missing" }
 ];
 const wpBase = "https://detailedvehiclehistory.com/vin-check/";
 const payloadBase = "https://dvh.vehiclehistory.report/vin-check/";
