@@ -4,117 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Service Records by VIN — Migration QA Report</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-  :root {
-    --bg: #0c0e16; --surface: #161822; --surface-2: #1e2231; --surface-3: #262b3d;
-    --border: #2a3048; --border-light: #353d5a;
-    --text: #f1f3f9; --text-secondary: #c4c9de; --text-muted: #7c84a3;
-    --accent: #8b5cf6; --accent-light: #a78bfa; --accent-soft: rgba(139,92,246,.1);
-    --green: #10b981; --green-soft: rgba(16,185,129,.1);
-    --blue: #3b82f6; --blue-soft: rgba(59,130,246,.1);
-    --radius: 14px; --radius-sm: 10px;
-    --shadow: 0 4px 24px rgba(0,0,0,.35); --shadow-lg: 0 8px 40px rgba(0,0,0,.45);
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-  .accent-stripe { height: 4px; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981); }
-  .header {
-    background: radial-gradient(ellipse at 20% 50%, rgba(139,92,246,.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(59,130,246,.06) 0%, transparent 60%),
-      linear-gradient(180deg, #161822 0%, #0c0e16 100%);
-    border-bottom: 1px solid var(--border); padding: 48px 0 40px;
-  }
-  .header-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
-  .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(139,92,246,.1); backdrop-filter: blur(8px); color: var(--accent-light); font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 20px; border: 1px solid rgba(139,92,246,.15); }
-  .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -.75px; margin-bottom: 8px; background: linear-gradient(135deg, #ffffff 0%, #c4c9de 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
-  .header p span { color: var(--text-secondary); }
-
-  .stats { max-width: 1280px; margin: -28px auto 0; padding: 0 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; position: relative; z-index: 2; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); border-left: 4px solid var(--border); position: relative; overflow: hidden; transition: transform .25s, box-shadow .25s; }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .stat-card::after { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 50%; filter: blur(40px); opacity: .08; pointer-events: none; }
-  .stat-card .label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 10px; }
-  .stat-card .value { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; font-feature-settings: 'tnum'; }
-  .stat-card .sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-  .stat-card.green { border-left-color: var(--green); }
-  .stat-card.green .value { color: var(--green); }
-  .stat-card.green::after { background: var(--green); }
-  .stat-card.blue { border-left-color: var(--blue); }
-  .stat-card.blue .value { color: var(--blue); }
-  .stat-card.blue::after { background: var(--blue); }
-
-  .success-banner { max-width: 1280px; margin: 24px auto 0; padding: 0 32px; }
-  .success-card { background: var(--green-soft); border: 1px solid rgba(16,185,129,.2); border-left: 4px solid var(--green); border-radius: var(--radius); padding: 18px 22px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 12px rgba(16,185,129,.06); }
-  .success-card svg { flex-shrink: 0; color: var(--green); }
-  .success-card .s-content { flex: 1; }
-  .success-card .s-title { font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
-  .success-card .s-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-
-  .toolbar { max-width: 1280px; margin: 24px auto 0; padding: 0 32px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .search-box { flex: 1; min-width: 240px; position: relative; }
-  .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 16px; height: 16px; }
-  .search-box input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font); font-size: 14px; font-weight: 500; padding: 11px 14px 11px 42px; outline: none; transition: all .25s; }
-  .search-box input::placeholder { color: var(--text-muted); }
-  .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
-  .view-toggle button { background: none; border: none; color: var(--text-muted); padding: 11px 16px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .25s; }
-  .view-toggle button.active { background: var(--accent-soft); color: var(--accent-light); }
-  .view-toggle button:hover:not(.active) { color: var(--text-secondary); }
-
-  .container { max-width: 1280px; margin: 20px auto 48px; padding: 0 32px; }
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-  table { width: 100%; border-collapse: collapse; }
-  thead th { background: var(--surface-2); backdrop-filter: blur(8px); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; white-space: nowrap; }
-  thead th.center { text-align: center; }
-  tbody tr { border-bottom: 1px solid rgba(42,48,72,.5); transition: background .2s; }
-  tbody tr:nth-child(even) { background: rgba(30,34,49,.3); }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: rgba(139,92,246,.04); }
-  td { padding: 14px 16px; font-size: 14px; vertical-align: middle; }
-  td.center { text-align: center; }
-  td.num { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: center; width: 48px; }
-  .brand-name { font-weight: 700; color: var(--text); text-transform: capitalize; }
-  .wp-id { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text-muted); }
-
-  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; white-space: nowrap; letter-spacing: .2px; }
-  .badge-green { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16,185,129,.15); }
-  .badge-blue { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(59,130,246,.15); }
-  .badge svg { width: 12px; height: 12px; }
-
-  .link-group { display: flex; gap: 8px; align-items: center; }
-  a.link-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; text-decoration: none; padding: 7px 14px; border-radius: 8px; transition: all .25s; white-space: nowrap; letter-spacing: .2px; }
-  a.link-btn svg { width: 12px; height: 12px; }
-  a.link-wp { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
-  a.link-wp:hover { color: var(--text); border-color: var(--border-light); background: var(--surface-3); }
-  a.link-payload { background: var(--accent-soft); color: var(--accent-light); border: 1px solid rgba(139,92,246,.15); }
-  a.link-payload:hover { background: rgba(139,92,246,.25); border-color: rgba(139,92,246,.3); }
-
-  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--green); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); transition: all .25s; }
-  .card:hover { border-color: var(--accent); border-top-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-lg), 0 0 20px var(--accent-soft); }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-  .card-title { font-size: 18px; font-weight: 800; text-transform: capitalize; color: var(--text); }
-  .card-wpid { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--surface-2); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); }
-  .card-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
-  .card-stat { text-align: center; padding: 12px 0; background: var(--surface-2); border-radius: var(--radius-sm); border: 1px solid var(--border); }
-  .card-stat .cs-val { font-size: 18px; font-weight: 800; }
-  .card-stat .cs-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 3px; }
-  .card-stat.ok .cs-val { color: var(--green); }
-  .card-links { display: flex; gap: 8px; }
-  .card-links a.link-btn { flex: 1; justify-content: center; padding: 9px 12px; }
-
-  .no-results { text-align: center; padding: 64px 24px; color: var(--text-muted); font-size: 15px; }
-  .no-results svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: .25; }
-  .hidden { display: none !important; }
-  @media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } .header-inner, .toolbar, .container, .success-banner { padding: 0 16px; } .cards-grid { grid-template-columns: 1fr; } .table-wrap { overflow-x: auto; } .header h1 { font-size: 26px; } }
-  @media (max-width: 480px) { .stats { grid-template-columns: 1fr; } }
-  @media print { .accent-stripe { display: none; } body { background: #fff; color: #111; } .header { background: #f8f9fa; } .header h1 { -webkit-text-fill-color: #111; background: none; } .stat-card, .table-wrap, .card { box-shadow: none; border-color: #ddd; } .toolbar { display: none; } a.link-btn { color: #333 !important; background: #f1f1f1 !important; } }
-</style>
+<link rel="stylesheet" href="../styles.css">
 </head>
 <body>
 
@@ -134,12 +24,12 @@
   <div class="stat-card green"><div class="label">Issues Found</div><div class="value">0</div><div class="sub">Clean migration</div></div>
 </div>
 
-<div class="success-banner">
-  <div class="success-card">
+<div class="banners">
+  <div class="banner banner-success">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
-    <div class="s-content">
-      <div class="s-title">All clear — zero heading issues</div>
-      <div class="s-text">All 21 brand pages have perfect heading matches between WordPress and Payload. Title and description fields match on every page. QA can verify visually using the compare links below.</div>
+    <div class="b-content">
+      <div class="b-title">All clear — zero heading issues</div>
+      <div class="b-text">All 21 brand pages have perfect heading matches between WordPress and Payload. Title and description fields match on every page. QA can verify visually using the compare links below.</div>
     </div>
   </div>
 </div>
@@ -163,27 +53,27 @@
 
 <script>
 const DATA = [
-  { slug: "acura",       wpId: 240470, headings: 31 },
-  { slug: "audi",        wpId: 242021, headings: 31 },
-  { slug: "bmw",         wpId: 242192, headings: 31 },
-  { slug: "ford",        wpId: 242793, headings: 30 },
-  { slug: "gm",          wpId: 269340, headings: 64 },
-  { slug: "honda",       wpId: 242257, headings: 31 },
-  { slug: "land-rover",  wpId: 242762, headings: 30 },
-  { slug: "lexus",       wpId: 273369, headings: 30 },
-  { slug: "mazda",       wpId: 273376, headings: 30 },
-  { slug: "mercedes",    wpId: 273436, headings: 30 },
-  { slug: "mini",        wpId: 269208, headings: 33 },
-  { slug: "mitsubishi",  wpId: 273441, headings: 30 },
-  { slug: "nissan",      wpId: 273446, headings: 34 },
-  { slug: "pontiac",     wpId: 273454, headings: 37 },
-  { slug: "porsche",     wpId: 273467, headings: 34 },
+  { slug: "acura", wpId: 240470, headings: 31 },
+  { slug: "audi", wpId: 242021, headings: 31 },
+  { slug: "bmw", wpId: 242192, headings: 31 },
+  { slug: "ford", wpId: 242793, headings: 30 },
+  { slug: "gm", wpId: 269340, headings: 64 },
+  { slug: "honda", wpId: 242257, headings: 31 },
+  { slug: "land-rover", wpId: 242762, headings: 30 },
+  { slug: "lexus", wpId: 273369, headings: 30 },
+  { slug: "mazda", wpId: 273376, headings: 30 },
+  { slug: "mercedes", wpId: 273436, headings: 30 },
+  { slug: "mini", wpId: 269208, headings: 33 },
+  { slug: "mitsubishi", wpId: 273441, headings: 30 },
+  { slug: "nissan", wpId: 273446, headings: 34 },
+  { slug: "pontiac", wpId: 273454, headings: 37 },
+  { slug: "porsche", wpId: 273467, headings: 34 },
   { slug: "range-rover", wpId: 273737, headings: 34 },
-  { slug: "subaru",      wpId: 273786, headings: 33 },
-  { slug: "tesla",       wpId: 273803, headings: 34 },
-  { slug: "toyota",      wpId: 269265, headings: 34 },
-  { slug: "volvo",       wpId: 273837, headings: 34 },
-  { slug: "vw",          wpId: 273829, headings: 33 }
+  { slug: "subaru", wpId: 273786, headings: 33 },
+  { slug: "tesla", wpId: 273803, headings: 34 },
+  { slug: "toyota", wpId: 269265, headings: 34 },
+  { slug: "volvo", wpId: 273837, headings: 34 },
+  { slug: "vw", wpId: 273829, headings: 33 }
 ];
 const wpBase = "https://detailedvehiclehistory.com/service-records-by-vin/";
 const payloadBase = "https://dvh.vehiclehistory.report/service-records-by-vin/";
@@ -195,49 +85,21 @@ function titleCase(slug) {
   return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
 }
 function renderTable(items) {
-  const tbody = document.getElementById("table-body");
-  const noRes = document.getElementById("no-results-table");
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
   if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
   noRes.classList.add("hidden");
-  tbody.innerHTML = items.map((d, i) => `
-    <tr data-slug="${d.slug}">
-      <td class="num">${i + 1}</td>
-      <td><span class="brand-name">${titleCase(d.slug)}</span></td>
-      <td><span class="wp-id">${d.wpId}</span></td>
-      <td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td>
-      <td class="center"><span class="badge badge-green">${svgCheck} Match</span></td>
-      <td class="center"><span class="badge badge-green">${svgCheck} Match</span></td>
-      <td class="center"><span class="badge badge-blue">${d.headings} ok</span></td>
-      <td><div class="link-group">
-        <a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a>
-        <a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a>
-      </div></td>
-    </tr>`).join("");
+  tbody.innerHTML = items.map((d, i) => `<tr data-slug="${d.slug}"><td class="num">${i+1}</td><td><span class="brand-name">${titleCase(d.slug)}</span></td><td><span class="wp-id">${d.wpId}</span></td><td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-blue">${d.headings} ok</span></td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`).join("");
 }
 function renderCards(items) {
-  const grid = document.getElementById("view-cards");
-  const noRes = document.getElementById("no-results-cards");
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
   if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
   noRes.classList.add("hidden");
-  grid.innerHTML = items.map(d => `
-    <div class="card" data-slug="${d.slug}">
-      <div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div>
-      <div class="card-stats">
-        <div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div>
-        <div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div>
-        <div class="card-stat ok"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div>
-      </div>
-      <div class="card-links">
-        <a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a>
-        <a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a>
-      </div>
-    </div>`).join("");
+  grid.innerHTML = items.map(d => `<div class="card" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div><div class="card-stats"><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div><div class="card-stat ok"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div></div><div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`).join("");
 }
 document.getElementById("search").addEventListener("input", function () {
   const q = this.value.toLowerCase().trim();
   const filtered = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q) || String(d.wpId).includes(q)) : DATA;
-  renderTable(filtered);
-  renderCards(filtered);
+  renderTable(filtered); renderCards(filtered);
 });
 function setView(view) {
   document.getElementById("btn-table").classList.toggle("active", view === "table");
@@ -245,8 +107,7 @@ function setView(view) {
   document.getElementById("view-table").classList.toggle("hidden", view !== "table");
   document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
 }
-renderTable(DATA);
-renderCards(DATA);
+renderTable(DATA); renderCards(DATA);
 </script>
 </body>
 </html>

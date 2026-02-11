@@ -4,89 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DVH — Migration QA Reports</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-  :root {
-    --bg: #0c0e16; --surface: #161822; --surface-2: #1e2231; --surface-3: #262b3d;
-    --border: #2a3048; --border-light: #353d5a;
-    --text: #f1f3f9; --text-secondary: #c4c9de; --text-muted: #7c84a3;
-    --accent: #8b5cf6; --accent-light: #a78bfa; --accent-soft: rgba(139,92,246,.1);
-    --green: #10b981; --green-soft: rgba(16,185,129,.1);
-    --blue: #3b82f6; --blue-soft: rgba(59,130,246,.1);
-    --amber: #f59e0b; --amber-soft: rgba(245,158,11,.1);
-    --radius: 14px; --radius-sm: 10px;
-    --shadow: 0 4px 24px rgba(0,0,0,.35); --shadow-lg: 0 8px 40px rgba(0,0,0,.45);
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-  .accent-stripe { height: 4px; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981); }
-  .header {
-    background: radial-gradient(ellipse at 20% 50%, rgba(139,92,246,.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(59,130,246,.06) 0%, transparent 60%),
-      linear-gradient(180deg, #161822 0%, #0c0e16 100%);
-    border-bottom: 1px solid var(--border); padding: 56px 0 48px; text-align: center;
-  }
-  .header-inner { max-width: 960px; margin: 0 auto; padding: 0 32px; }
-  .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(139,92,246,.1); backdrop-filter: blur(8px); color: var(--accent-light); font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 20px; border: 1px solid rgba(139,92,246,.15); }
-  .header h1 { font-size: 38px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; background: linear-gradient(135deg, #ffffff 0%, #c4c9de 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .header p { color: var(--text-muted); font-size: 16px; font-weight: 500; max-width: 520px; margin: 0 auto; }
-  .header p span { color: var(--text-secondary); }
-
-  .stats { max-width: 960px; margin: -28px auto 0; padding: 0 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; position: relative; z-index: 2; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); border-left: 4px solid var(--border); position: relative; overflow: hidden; transition: transform .25s, box-shadow .25s; text-align: center; }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .stat-card::after { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 50%; filter: blur(40px); opacity: .08; pointer-events: none; }
-  .stat-card .label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 10px; }
-  .stat-card .value { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; font-feature-settings: 'tnum'; }
-  .stat-card .sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-  .stat-card.green { border-left-color: var(--green); }
-  .stat-card.green .value { color: var(--green); }
-  .stat-card.green::after { background: var(--green); }
-  .stat-card.blue { border-left-color: var(--blue); }
-  .stat-card.blue .value { color: var(--blue); }
-  .stat-card.blue::after { background: var(--blue); }
-  .stat-card.accent { border-left-color: var(--accent); }
-  .stat-card.accent .value { color: var(--accent); }
-  .stat-card.accent::after { background: var(--accent); }
-
-  .container { max-width: 960px; margin: 40px auto 64px; padding: 0 32px; }
-  .section-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 16px; padding-left: 4px; }
-
-  .reports-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-
-  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; box-shadow: var(--shadow); transition: all .25s; text-decoration: none; color: var(--text); display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; }
-  .report-card.ready { border-top: 3px solid var(--green); cursor: pointer; }
-  .report-card.ready:hover { border-color: var(--accent); border-top-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-lg), 0 0 24px var(--accent-soft); }
-  .report-card.pending { border-top: 3px solid var(--border-light); cursor: default; opacity: .6; }
-
-  .report-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .report-card-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .report-card.ready .report-card-icon { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16,185,129,.15); }
-  .report-card.pending .report-card-icon { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
-
-  .report-status { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: .3px; text-transform: uppercase; }
-  .status-ready { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16,185,129,.15); }
-  .status-pending { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
-
-  .report-card h3 { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
-  .report-card .report-desc { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.5; }
-
-  .report-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--border); margin-top: auto; }
-  .report-meta { font-size: 12px; font-weight: 600; color: var(--text-muted); font-family: var(--mono); }
-  .report-meta span { color: var(--text-secondary); }
-  .report-arrow { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); color: var(--accent-light); border: 1px solid rgba(139,92,246,.15); transition: all .25s; }
-  .report-card.ready:hover .report-arrow { background: rgba(139,92,246,.25); border-color: rgba(139,92,246,.3); }
-  .report-card.pending .report-arrow { background: var(--surface-2); color: var(--text-muted); border-color: var(--border); }
-
-  .footer { text-align: center; padding: 32px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; font-weight: 500; }
-  .footer a { color: var(--accent-light); text-decoration: none; }
-  .footer a:hover { text-decoration: underline; }
-
-  @media (max-width: 768px) { .reports-grid { grid-template-columns: 1fr; } .stats { grid-template-columns: 1fr; } .header h1 { font-size: 28px; } .header-inner, .container { padding: 0 16px; } .stats { padding: 0 16px; } }
-  @media print { .accent-stripe { display: none; } body { background: #fff; color: #111; } .header { background: #f8f9fa; } .header h1 { -webkit-text-fill-color: #111; background: none; } .report-card, .stat-card { box-shadow: none; border-color: #ddd; } }
+  .header { padding: 56px 0 48px; text-align: center; }
+  .header-inner { max-width: 960px; }
+  .header h1 { font-size: 38px; letter-spacing: -1px; }
+  .header p { font-size: 16px; max-width: 520px; margin: 0 auto; }
+  .stats { max-width: 960px; grid-template-columns: repeat(3, 1fr); }
+  .stat-card { text-align: center; }
+  .container { max-width: 960px; margin: 40px auto 64px; }
 </style>
 </head>
 <body>
@@ -94,31 +20,16 @@
 <div class="accent-stripe"></div>
 <div class="header">
   <div class="header-inner">
-    <div class="header-badge">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg>
-      DVH Migration
-    </div>
+    <div class="header-badge"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg> DVH Migration</div>
     <h1>Migration QA Reports</h1>
     <p>WordPress to Payload CMS migration reports <span>&middot;</span> Quality assurance dashboard</p>
   </div>
 </div>
 
 <div class="stats">
-  <div class="stat-card green">
-    <div class="label">Reports Ready</div>
-    <div class="value">4</div>
-    <div class="sub">Available for review</div>
-  </div>
-  <div class="stat-card accent">
-    <div class="label">In Progress</div>
-    <div class="value">6</div>
-    <div class="sub">Migration ongoing</div>
-  </div>
-  <div class="stat-card blue">
-    <div class="label">Page Types</div>
-    <div class="value">10</div>
-    <div class="sub">Total page types</div>
-  </div>
+  <div class="stat-card green"><div class="label">Reports Ready</div><div class="value">4</div><div class="sub">Available for review</div></div>
+  <div class="stat-card accent"><div class="label">In Progress</div><div class="value">6</div><div class="sub">Migration ongoing</div></div>
+  <div class="stat-card blue"><div class="label">Page Types</div><div class="value">10</div><div class="sub">Total page types</div></div>
 </div>
 
 <div class="container">
@@ -127,160 +38,90 @@
 
     <a href="vin-decoder/" class="report-card ready">
       <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
-        </div>
+        <div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div>
         <span class="report-status status-ready">Ready</span>
       </div>
       <h3>VIN Decoder</h3>
       <div class="report-desc">62 brand pages migrated. 2,550 headings matched. 2 brands need attention (Cadillac, Lamborghini).</div>
-      <div class="report-card-footer">
-        <div class="report-meta"><span>62</span> brands</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta"><span>62</span> brands</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </a>
 
     <a href="bill-of-sale/" class="report-card ready">
       <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
-        </div>
+        <div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></div>
         <span class="report-status status-ready">Ready</span>
       </div>
       <h3>Bill of Sale</h3>
       <div class="report-desc">All 50 US states migrated successfully. Zero heading issues. Clean migration across all pages.</div>
-      <div class="report-card-footer">
-        <div class="report-meta"><span>50</span> states</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta"><span>50</span> states</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </a>
 
     <a href="build-sheet-by-vin/" class="report-card ready">
       <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        </div>
+        <div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
         <span class="report-status status-ready">Ready</span>
       </div>
       <h3>Build Sheet by VIN</h3>
       <div class="report-desc">21 brand pages migrated. Honda has known heading issues (13 H4 headings lost). All others clean.</div>
-      <div class="report-card-footer">
-        <div class="report-meta"><span>21</span> brands</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta"><span>21</span> brands</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </a>
 
     <a href="service-records-by-vin/" class="report-card ready">
       <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        </div>
+        <div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
         <span class="report-status status-ready">Ready</span>
       </div>
       <h3>Service Records by VIN</h3>
       <div class="report-desc">21 brand pages migrated. 708 headings matched. Zero issues — cleanest migration across all types.</div>
-      <div class="report-card-footer">
-        <div class="report-meta"><span>21</span> brands</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta"><span>21</span> brands</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </a>
 
     <div class="report-card pending">
-      <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="report-status status-pending">In Progress</span>
-      </div>
+      <div class="report-card-top"><div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="report-status status-pending">In Progress</span></div>
       <h3>VIN Check — State</h3>
       <div class="report-desc">50 US state pages. Migration completed, QA report being prepared.</div>
-      <div class="report-card-footer">
-        <div class="report-meta"><span>50</span> states</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta"><span>50</span> states</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </div>
 
     <div class="report-card pending">
-      <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="report-status status-pending">In Progress</span>
-      </div>
+      <div class="report-card-top"><div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="report-status status-pending">In Progress</span></div>
       <h3>VIN Check — Country</h3>
       <div class="report-desc">International VIN check pages. Migration in progress.</div>
-      <div class="report-card-footer">
-        <div class="report-meta">&mdash;</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta">&mdash;</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </div>
 
     <div class="report-card pending">
-      <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="report-status status-pending">In Progress</span>
-      </div>
+      <div class="report-card-top"><div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="report-status status-pending">In Progress</span></div>
       <h3>License Plate Lookup</h3>
       <div class="report-desc">50 US state pages. Migration completed, QA report being prepared.</div>
-      <div class="report-card-footer">
-        <div class="report-meta"><span>50</span> states</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta"><span>50</span> states</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </div>
 
     <div class="report-card pending">
-      <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="report-status status-pending">In Progress</span>
-      </div>
+      <div class="report-card-top"><div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="report-status status-pending">In Progress</span></div>
       <h3>Window Sticker</h3>
       <div class="report-desc">Window sticker brand pages. Migration in progress.</div>
-      <div class="report-card-footer">
-        <div class="report-meta">&mdash;</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta">&mdash;</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </div>
 
     <div class="report-card pending">
-      <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="report-status status-pending">In Progress</span>
-      </div>
+      <div class="report-card-top"><div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="report-status status-pending">In Progress</span></div>
       <h3>Motorcycle VIN Check</h3>
       <div class="report-desc">Motorcycle brand VIN check pages. Migration in progress.</div>
-      <div class="report-card-footer">
-        <div class="report-meta">&mdash;</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta">&mdash;</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </div>
 
     <div class="report-card pending">
-      <div class="report-card-top">
-        <div class="report-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <span class="report-status status-pending">In Progress</span>
-      </div>
+      <div class="report-card-top"><div class="report-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="report-status status-pending">In Progress</span></div>
       <h3>Classic VIN Decoder</h3>
       <div class="report-desc">Classic vehicle VIN decoder pages. Migration in progress.</div>
-      <div class="report-card-footer">
-        <div class="report-meta">&mdash;</div>
-        <div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div>
-      </div>
+      <div class="report-card-footer"><div class="report-meta">&mdash;</div><div class="report-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 3l5 5-5 5"/></svg></div></div>
     </div>
 
   </div>
 </div>
 
-<div class="footer">
-  DVH Migration QA &middot; WordPress to Payload CMS &middot; Generated Feb 2026
-</div>
+<div class="footer">DVH Migration QA &middot; WordPress to Payload CMS &middot; Generated Feb 2026</div>
 
 </body>
 </html>

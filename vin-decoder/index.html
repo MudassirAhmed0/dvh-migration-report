@@ -4,155 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIN Decoder — Migration QA Report</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-  :root {
-    --bg: #0c0e16; --surface: #161822; --surface-2: #1e2231; --surface-3: #262b3d;
-    --border: #2a3048; --border-light: #353d5a;
-    --text: #f1f3f9; --text-secondary: #c4c9de; --text-muted: #7c84a3;
-    --accent: #8b5cf6; --accent-light: #a78bfa; --accent-soft: rgba(139,92,246,.1);
-    --green: #10b981; --green-soft: rgba(16,185,129,.1);
-    --blue: #3b82f6; --blue-soft: rgba(59,130,246,.1);
-    --amber: #f59e0b; --amber-soft: rgba(245,158,11,.1);
-    --radius: 14px; --radius-sm: 10px;
-    --shadow: 0 4px 24px rgba(0,0,0,.35); --shadow-lg: 0 8px 40px rgba(0,0,0,.45);
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-  .accent-stripe { height: 4px; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981); }
-  .header {
-    background: radial-gradient(ellipse at 20% 50%, rgba(139,92,246,.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(59,130,246,.06) 0%, transparent 60%),
-      linear-gradient(180deg, #161822 0%, #0c0e16 100%);
-    border-bottom: 1px solid var(--border); padding: 48px 0 40px;
-  }
-  .header-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
-  .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(139,92,246,.1); backdrop-filter: blur(8px); color: var(--accent-light); font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 20px; border: 1px solid rgba(139,92,246,.15); }
-  .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -.75px; margin-bottom: 8px; background: linear-gradient(135deg, #ffffff 0%, #c4c9de 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
-  .header p span { color: var(--text-secondary); }
-
-  .stats { max-width: 1280px; margin: -28px auto 0; padding: 0 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; position: relative; z-index: 2; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); border-left: 4px solid var(--border); position: relative; overflow: hidden; transition: transform .25s, box-shadow .25s; }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .stat-card::after { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 50%; filter: blur(40px); opacity: .08; pointer-events: none; }
-  .stat-card .label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 10px; }
-  .stat-card .value { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; font-feature-settings: 'tnum'; }
-  .stat-card .sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-  .stat-card.green { border-left-color: var(--green); }
-  .stat-card.green .value { color: var(--green); }
-  .stat-card.green::after { background: var(--green); }
-  .stat-card.blue { border-left-color: var(--blue); }
-  .stat-card.blue .value { color: var(--blue); }
-  .stat-card.blue::after { background: var(--blue); }
-  .stat-card.accent { border-left-color: var(--accent); }
-  .stat-card.accent .value { color: var(--accent); }
-  .stat-card.accent::after { background: var(--accent); }
-  .stat-card.amber { border-left-color: var(--amber); }
-  .stat-card.amber .value { color: var(--amber); }
-  .stat-card.amber::after { background: var(--amber); }
-
-  .banners { max-width: 1280px; margin: 24px auto 0; padding: 0 32px; display: flex; flex-direction: column; gap: 12px; }
-  .banner { border-radius: var(--radius); padding: 18px 22px; display: flex; align-items: flex-start; gap: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
-  .banner svg { flex-shrink: 0; margin-top: 2px; }
-  .banner .b-content { flex: 1; }
-  .banner .b-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-  .banner .b-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-  .banner .b-text strong { color: var(--text-secondary); font-weight: 700; }
-  .banner-info { background: var(--blue-soft); border: 1px solid rgba(59,130,246,.18); border-left: 4px solid var(--blue); }
-  .banner-info svg { color: var(--blue); }
-  .banner-info .b-title { color: var(--blue); }
-  .banner-amber { background: var(--amber-soft); border: 1px solid rgba(245,158,11,.18); border-left: 4px solid var(--amber); }
-  .banner-amber svg { color: var(--amber); }
-  .banner-amber .b-title { color: var(--amber); }
-
-  .toolbar { max-width: 1280px; margin: 24px auto 0; padding: 0 32px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .search-box { flex: 1; min-width: 240px; position: relative; }
-  .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 16px; height: 16px; }
-  .search-box input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font); font-size: 14px; font-weight: 500; padding: 11px 14px 11px 42px; outline: none; transition: all .25s; }
-  .search-box input::placeholder { color: var(--text-muted); }
-  .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-
-  .filter-btns { display: flex; gap: 6px; }
-  .filter-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-family: var(--font); font-size: 13px; font-weight: 600; padding: 9px 16px; cursor: pointer; transition: all .25s; white-space: nowrap; }
-  .filter-btn:hover { color: var(--text-secondary); border-color: var(--border-light); }
-  .filter-btn.active { background: var(--accent-soft); color: var(--accent-light); border-color: rgba(139,92,246,.2); }
-  .filter-btn .count { font-family: var(--mono); font-size: 11px; font-weight: 600; margin-left: 4px; opacity: .7; }
-
-  .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
-  .view-toggle button { background: none; border: none; color: var(--text-muted); padding: 11px 16px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .25s; }
-  .view-toggle button.active { background: var(--accent-soft); color: var(--accent-light); }
-  .view-toggle button:hover:not(.active) { color: var(--text-secondary); }
-
-  .container { max-width: 1280px; margin: 20px auto 48px; padding: 0 32px; }
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-  table { width: 100%; border-collapse: collapse; }
-  thead th { background: var(--surface-2); backdrop-filter: blur(8px); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; white-space: nowrap; }
-  thead th.center { text-align: center; }
-  tbody tr { border-bottom: 1px solid rgba(42,48,72,.5); transition: background .2s; }
-  tbody tr:nth-child(even) { background: rgba(30,34,49,.3); }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: rgba(139,92,246,.04); }
-  tbody tr.has-issues { background: rgba(245,158,11,.03); }
-  tbody tr.has-issues:nth-child(even) { background: rgba(245,158,11,.05); }
-  tbody tr.has-issues:hover { background: rgba(245,158,11,.08); }
-  td { padding: 14px 16px; font-size: 14px; vertical-align: middle; }
-  td.center { text-align: center; }
-  td.num { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: center; width: 48px; }
-  .brand-name { font-weight: 700; color: var(--text); text-transform: capitalize; }
-  .wp-id { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text-muted); }
-
-  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; white-space: nowrap; letter-spacing: .2px; }
-  .badge-green { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16,185,129,.15); }
-  .badge-blue { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(59,130,246,.15); }
-  .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(245,158,11,.15); }
-  .badge svg { width: 12px; height: 12px; }
-
-  .heading-detail { position: relative; cursor: help; }
-  .heading-detail .tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 14px 18px; font-size: 12px; white-space: nowrap; z-index: 20; box-shadow: 0 8px 32px rgba(0,0,0,.5); max-width: 360px; }
-  .heading-detail:hover .tooltip { display: block; }
-  .tooltip-row { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0; }
-  .tooltip-row .t-label { color: var(--text-muted); font-weight: 500; }
-  .tooltip-row .t-val { font-weight: 700; font-family: var(--mono); }
-  .tooltip-row .t-val.warn { color: var(--amber); }
-
-  .link-group { display: flex; gap: 8px; align-items: center; }
-  a.link-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; text-decoration: none; padding: 7px 14px; border-radius: 8px; transition: all .25s; white-space: nowrap; letter-spacing: .2px; }
-  a.link-btn svg { width: 12px; height: 12px; }
-  a.link-wp { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
-  a.link-wp:hover { color: var(--text); border-color: var(--border-light); background: var(--surface-3); }
-  a.link-payload { background: var(--accent-soft); color: var(--accent-light); border: 1px solid rgba(139,92,246,.15); }
-  a.link-payload:hover { background: rgba(139,92,246,.25); border-color: rgba(139,92,246,.3); }
-
-  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--green); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); transition: all .25s; }
-  .card:hover { border-color: var(--accent); border-top-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-lg), 0 0 20px var(--accent-soft); }
-  .card.has-issues { border-top-color: var(--amber); }
-  .card.has-issues:hover { border-color: var(--amber); border-top-color: var(--amber); box-shadow: var(--shadow-lg), 0 0 20px var(--amber-soft); }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-  .card-title { font-size: 18px; font-weight: 800; text-transform: capitalize; color: var(--text); }
-  .card-wpid { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--surface-2); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); }
-  .card-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
-  .card-stat { text-align: center; padding: 12px 0; background: var(--surface-2); border-radius: var(--radius-sm); border: 1px solid var(--border); }
-  .card-stat .cs-val { font-size: 18px; font-weight: 800; }
-  .card-stat .cs-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 3px; }
-  .card-stat.ok .cs-val { color: var(--green); }
-  .card-stat.warn .cs-val { color: var(--amber); }
-  .card-issue { background: var(--amber-soft); border: 1px solid rgba(245,158,11,.15); border-radius: var(--radius-sm); padding: 11px 14px; margin-bottom: 18px; font-size: 12px; color: var(--amber); line-height: 1.6; }
-  .card-issue strong { font-weight: 700; }
-  .card-links { display: flex; gap: 8px; }
-  .card-links a.link-btn { flex: 1; justify-content: center; padding: 9px 12px; }
-
-  .no-results { text-align: center; padding: 64px 24px; color: var(--text-muted); font-size: 15px; }
-  .no-results svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: .25; }
-  .hidden { display: none !important; }
-  @media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } .header-inner, .toolbar, .container, .banners { padding: 0 16px; } .cards-grid { grid-template-columns: 1fr; } .table-wrap { overflow-x: auto; } .header h1 { font-size: 26px; } .filter-btns { width: 100%; } }
-  @media (max-width: 480px) { .stats { grid-template-columns: 1fr; } }
-  @media print { .accent-stripe { display: none; } body { background: #fff; color: #111; } .header { background: #f8f9fa; } .header h1 { -webkit-text-fill-color: #111; background: none; } .stat-card, .table-wrap, .card { box-shadow: none; border-color: #ddd; } .toolbar { display: none; } a.link-btn { color: #333 !important; background: #f1f1f1 !important; } }
-</style>
+<link rel="stylesheet" href="../styles.css">
 </head>
 <body>
 
@@ -184,10 +36,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
     <div class="b-content">
       <div class="b-title">2 brands need attention</div>
-      <div class="b-text">
-        <strong>Cadillac</strong> — 1 H2 heading missing ("What Information Can You Find With a Cadillac VIN Decoder?") + 1 text change.<br>
-        <strong>Lamborghini</strong> — 2 extra H3 headings missing (FAQ-related content beyond the blog widget).
-      </div>
+      <div class="b-text"><strong>Cadillac</strong> — 1 H2 heading missing ("What Information Can You Find With a Cadillac VIN Decoder?") + 1 text change.<br><strong>Lamborghini</strong> — 2 extra H3 headings missing (FAQ-related content beyond the blog widget).</div>
     </div>
   </div>
 </div>
@@ -279,102 +128,45 @@ const DATA = [
   { slug:"volkswagen", wpId:225089, headings:52, ok:true },
   { slug:"volvo", wpId:225090, headings:51, ok:true }
 ];
-
 const wpBase = "https://detailedvehiclehistory.com/vin-decoder/";
 const payloadBase = "https://dvh.vehiclehistory.report/vin-decoder/";
-
 const svgCheck = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8.5l3.5 3.5 7-7"/></svg>`;
 const svgWarn = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M8 5v4M8 11h.01"/></svg>`;
 const svgExt = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 9v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M9 2h5v5M6.5 9.5 14 2"/></svg>`;
-
 const special = { bmw:"BMW", gmc:"GMC" };
-function titleCase(slug) {
-  if (special[slug]) return special[slug];
-  return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
-}
-
+function titleCase(slug) { if (special[slug]) return special[slug]; return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "); }
 let currentFilter = "all";
 function getFiltered(items) {
   if (currentFilter === "clean") return items.filter(d => d.ok);
   if (currentFilter === "issues") return items.filter(d => !d.ok);
   return items;
 }
-
 function renderTable(items) {
-  const tbody = document.getElementById("table-body");
-  const noRes = document.getElementById("no-results-table");
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
   if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
   noRes.classList.add("hidden");
-  tbody.innerHTML = items.map((d, i) => `
-    <tr data-slug="${d.slug}" class="${d.ok ? '' : 'has-issues'}">
-      <td class="num">${i + 1}</td>
-      <td><span class="brand-name">${titleCase(d.slug)}</span></td>
-      <td><span class="wp-id">${d.wpId}</span></td>
-      <td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td>
-      <td class="center"><span class="badge badge-green">${svgCheck} Match</span></td>
-      <td class="center"><span class="badge badge-green">${svgCheck} Match</span></td>
-      <td class="center">${d.ok
-        ? `<span class="badge badge-blue">${d.headings} ok</span>`
-        : `<span class="heading-detail"><span class="badge badge-amber">${svgWarn} ${d.headings}</span><span class="tooltip"><div class="tooltip-row"><span class="t-label">Issue</span><span class="t-val warn">${d.issue}</span></div></span></span>`
-      }</td>
-      <td>
-        <div class="link-group">
-          <a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a>
-          <a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a>
-        </div>
-      </td>
-    </tr>`).join("");
+  tbody.innerHTML = items.map((d, i) => `<tr data-slug="${d.slug}" class="${d.ok ? '' : 'has-issues'}"><td class="num">${i+1}</td><td><span class="brand-name">${titleCase(d.slug)}</span></td><td><span class="wp-id">${d.wpId}</span></td><td class="center"><span class="badge badge-green">${svgCheck} Migrated</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center"><span class="badge badge-green">${svgCheck} Match</span></td><td class="center">${d.ok ? `<span class="badge badge-blue">${d.headings} ok</span>` : `<span class="heading-detail"><span class="badge badge-amber">${svgWarn} ${d.headings}</span><span class="tooltip"><div class="tooltip-row"><span class="t-label">Issue</span><span class="t-val warn">${d.issue}</span></div></span></span>`}</td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`).join("");
 }
-
 function renderCards(items) {
-  const grid = document.getElementById("view-cards");
-  const noRes = document.getElementById("no-results-cards");
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
   if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
   noRes.classList.add("hidden");
-  grid.innerHTML = items.map(d => `
-    <div class="card ${d.ok ? '' : 'has-issues'}" data-slug="${d.slug}">
-      <div class="card-top">
-        <div class="card-title">${titleCase(d.slug)}</div>
-        <div class="card-wpid">WP #${d.wpId}</div>
-      </div>
-      <div class="card-stats">
-        <div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div>
-        <div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div>
-        <div class="card-stat ${d.ok ? 'ok' : 'warn'}"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div>
-      </div>
-      ${d.issue ? `<div class="card-issue"><strong>Note:</strong> ${d.issue}</div>` : ''}
-      <div class="card-links">
-        <a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a>
-        <a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a>
-      </div>
-    </div>`).join("");
+  grid.innerHTML = items.map(d => `<div class="card ${d.ok ? '' : 'has-issues'}" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div><div class="card-stats"><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div><div class="card-stat ${d.ok ? 'ok' : 'warn'}"><div class="cs-val">${d.headings}</div><div class="cs-label">Headings</div></div></div>${d.issue ? `<div class="card-issue"><strong>Note:</strong> ${d.issue}</div>` : ''}<div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`).join("");
 }
-
 function render() {
   const q = document.getElementById("search").value.toLowerCase().trim();
   let items = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q) || String(d.wpId).includes(q)) : DATA;
-  items = getFiltered(items);
-  renderTable(items);
-  renderCards(items);
+  items = getFiltered(items); renderTable(items); renderCards(items);
 }
-
 document.getElementById("search").addEventListener("input", render);
-
-function setFilter(filter) {
-  currentFilter = filter;
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter));
-  render();
-}
-
+function setFilter(filter) { currentFilter = filter; document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter)); render(); }
 function setView(view) {
   document.getElementById("btn-table").classList.toggle("active", view === "table");
   document.getElementById("btn-cards").classList.toggle("active", view === "cards");
   document.getElementById("view-table").classList.toggle("hidden", view !== "table");
   document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
 }
-
 render();
 </script>
-
 </body>
 </html>
