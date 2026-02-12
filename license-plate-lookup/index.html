@@ -18,10 +18,10 @@
 </div>
 
 <div class="stats">
-  <div class="stat-card green"><div class="label">Passed</div><div class="value">48/50</div><div class="sub">All content headings match</div></div>
-  <div class="stat-card amber"><div class="label">Needs Attention</div><div class="value">2</div><div class="sub">1 fetch error, 1 heading gap</div></div>
+  <div class="stat-card green"><div class="label">Passed</div><div class="value">49/50</div><div class="sub">All content headings match</div></div>
+  <div class="stat-card amber"><div class="label">Needs Attention</div><div class="value">1</div><div class="sub">Heading gap</div></div>
   <div class="stat-card blue"><div class="label">Title &amp; Description</div><div class="value">100%</div><div class="sub">All match WordPress</div></div>
-  <div class="stat-card accent"><div class="label">Pass Rate</div><div class="value">96%</div><div class="sub">Across all states</div></div>
+  <div class="stat-card accent"><div class="label">Pass Rate</div><div class="value">98%</div><div class="sub">Across all states</div></div>
 </div>
 
 <div class="banners">
@@ -35,9 +35,8 @@
   <div class="banner banner-amber">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
     <div class="b-content">
-      <div class="b-title">2 states need attention</div>
+      <div class="b-title">1 state needs attention</div>
       <div class="b-text">
-        &bull; <strong>Alabama</strong> — Payload fetch failed<br>
         &bull; <strong>Texas</strong> — 5 H4 content headings not extracted
       </div>
     </div>
@@ -48,8 +47,8 @@
   <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="Search states..." autocomplete="off"></div>
   <div class="filter-btns">
     <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All <span class="count">50</span></button>
-    <button class="filter-btn" data-filter="clean" onclick="setFilter('clean')">Passed <span class="count">48</span></button>
-    <button class="filter-btn" data-filter="issues" onclick="setFilter('issues')">Failed <span class="count">2</span></button>
+    <button class="filter-btn" data-filter="clean" onclick="setFilter('clean')">Passed <span class="count">49</span></button>
+    <button class="filter-btn" data-filter="issues" onclick="setFilter('issues')">Failed <span class="count">1</span></button>
   </div>
   <div class="view-toggle">
     <button id="btn-table" class="active" onclick="setView('table')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Table</button>
@@ -68,7 +67,7 @@
 
 <script>
 const DATA = [
-  { slug: "alabama", wpId: 207079, ok: false, issue: "Payload fetch failed" },
+  { slug: "alabama", wpId: 207079, ok: true },
   { slug: "alaska", wpId: 207972, ok: true },
   { slug: "arizona", wpId: 207092, ok: true },
   { slug: "arkansas", wpId: 208002, ok: true },
