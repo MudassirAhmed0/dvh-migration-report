@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Recalls — Migration QA Report</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="accent-stripe"></div>
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg> Migration QA Report</div>
+    <h1>Vehicle Recalls — Brand Pages</h1>
+    <p>WordPress to Payload CMS migration <span>&middot;</span> 72 brands <span>&middot;</span> Generated Feb 12, 2026</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card green"><div class="label">Passed</div><div class="value">66/72</div><div class="sub">All headings match</div></div>
+  <div class="stat-card amber"><div class="label">Failed</div><div class="value">6</div><div class="sub">H2 or H3 mismatch</div></div>
+  <div class="stat-card blue"><div class="label">Pass Rate</div><div class="value">91.7%</div><div class="sub">Across all brands</div></div>
+  <div class="stat-card accent"><div class="label">H4 Gaps</div><div class="value">4</div><div class="sub">Passed but missing recall titles</div></div>
+</div>
+
+<div class="banners">
+  <div class="banner banner-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+    <div class="b-content">
+      <div class="b-title">6 brands failed heading validation</div>
+      <div class="b-text">
+        &bull; <strong>Cadillac</strong> — H2 &amp; H3 mismatch<br>
+        &bull; <strong>Tesla</strong> — H3 mismatch<br>
+        &bull; <strong>Ram</strong> — H3 mismatch<br>
+        &bull; <strong>Chevrolet</strong> — H3 mismatch<br>
+        &bull; <strong>Ford</strong> — H3 mismatch<br>
+        &bull; <strong>Tesla Vehicle Recalls History Check</strong> — H2 &amp; H3 mismatch
+      </div>
+    </div>
+  </div>
+  <div class="banner banner-info">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <div class="b-content">
+      <div class="b-title">4 brands passed but have missing H4 recall titles</div>
+      <div class="b-text">
+        &bull; <strong>Oldsmobile</strong> — 8 recall titles missing<br>
+        &bull; <strong>International</strong> — 5 recall titles missing<br>
+        &bull; <strong>Triumph</strong> — 8 recall titles missing<br>
+        &bull; <strong>Land Rover</strong> — 7 recall titles missing
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="Search brands..." autocomplete="off"></div>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All <span class="count">72</span></button>
+    <button class="filter-btn" data-filter="clean" onclick="setFilter('clean')">Passed <span class="count">66</span></button>
+    <button class="filter-btn" data-filter="issues" onclick="setFilter('issues')">Failed <span class="count">6</span></button>
+  </div>
+  <div class="view-toggle">
+    <button id="btn-table" class="active" onclick="setView('table')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Table</button>
+    <button id="btn-cards" onclick="setView('cards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Cards</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="view-table" class="table-wrap">
+    <table><thead><tr><th>#</th><th>Brand</th><th class="center">Status</th><th class="center">H2</th><th class="center">H3</th><th class="center">H4</th><th>Compare</th></tr></thead><tbody id="table-body"></tbody></table>
+    <div class="no-results hidden" id="no-results-table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No brands match your search</p></div>
+  </div>
+  <div id="view-cards" class="cards-grid hidden"></div>
+  <div class="no-results hidden" id="no-results-cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No brands match your search</p></div>
+</div>
+
+<script>
+const DATA = [
+  { slug: "acura", h2: true, h3: true, h4: true },
+  { slug: "alfa-romeo", h2: true, h3: true, h4: true },
+  { slug: "am-general", h2: true, h3: true, h4: true },
+  { slug: "amc", h2: true, h3: true, h4: true },
+  { slug: "aston-martin", h2: true, h3: true, h4: true },
+  { slug: "audi", h2: true, h3: true, h4: true },
+  { slug: "austin-healey", h2: true, h3: true, h4: true },
+  { slug: "bentley", h2: true, h3: true, h4: true },
+  { slug: "bricklin", h2: true, h3: true, h4: true },
+  { slug: "buick", h2: true, h3: true, h4: true },
+  { slug: "cadillac", h2: false, h3: false, h4: true },
+  { slug: "chevrolet", h2: true, h3: false, h4: true },
+  { slug: "chrysler", h2: true, h3: true, h4: true },
+  { slug: "daewoo", h2: true, h3: true, h4: true },
+  { slug: "daihatsu", h2: true, h3: true, h4: true },
+  { slug: "dodge", h2: true, h3: true, h4: true },
+  { slug: "eagle", h2: true, h3: true, h4: true },
+  { slug: "ferrari", h2: true, h3: true, h4: true },
+  { slug: "fiat", h2: true, h3: true, h4: true },
+  { slug: "fisker", h2: true, h3: true, h4: true },
+  { slug: "ford", h2: true, h3: false, h4: true },
+  { slug: "freightliner", h2: true, h3: true, h4: true },
+  { slug: "genesis", h2: true, h3: true, h4: true },
+  { slug: "gmc", h2: true, h3: true, h4: true },
+  { slug: "harley-davidson", h2: true, h3: true, h4: true },
+  { slug: "hino", h2: true, h3: true, h4: true },
+  { slug: "hummer", h2: true, h3: true, h4: true },
+  { slug: "infiniti", h2: true, h3: true, h4: true },
+  { slug: "international", h2: true, h3: true, h4: true, h4note: "5 recall titles missing" },
+  { slug: "isuzu", h2: true, h3: true, h4: true },
+  { slug: "jaguar", h2: true, h3: true, h4: true },
+  { slug: "kawasaki", h2: true, h3: true, h4: true },
+  { slug: "kenworth", h2: true, h3: true, h4: true },
+  { slug: "koenigsegg", h2: true, h3: true, h4: true },
+  { slug: "lamborghini", h2: true, h3: true, h4: true },
+  { slug: "land-rover", h2: true, h3: true, h4: true, h4note: "7 recall titles missing" },
+  { slug: "lexus", h2: true, h3: true, h4: true },
+  { slug: "lincoln", h2: true, h3: true, h4: true },
+  { slug: "lyons", h2: true, h3: true, h4: true },
+  { slug: "maserati", h2: true, h3: true, h4: true },
+  { slug: "maybach", h2: true, h3: true, h4: true },
+  { slug: "mazda", h2: true, h3: true, h4: true },
+  { slug: "mclaren", h2: true, h3: true, h4: true },
+  { slug: "mercedes-benz", h2: true, h3: true, h4: true },
+  { slug: "mercury", h2: true, h3: true, h4: true },
+  { slug: "mg", h2: true, h3: true, h4: true },
+  { slug: "mini", h2: true, h3: true, h4: true },
+  { slug: "mitsubishi", h2: true, h3: true, h4: true },
+  { slug: "mitsuoka", h2: true, h3: true, h4: true },
+  { slug: "morgan", h2: true, h3: true, h4: true },
+  { slug: "mosler", h2: true, h3: true, h4: true },
+  { slug: "oldsmobile", h2: true, h3: true, h4: true, h4note: "8 recall titles missing" },
+  { slug: "panoz", h2: true, h3: true, h4: true },
+  { slug: "peterbit", h2: true, h3: true, h4: true },
+  { slug: "polaris", h2: true, h3: true, h4: true },
+  { slug: "polestar", h2: true, h3: true, h4: true },
+  { slug: "pontiac", h2: true, h3: true, h4: true },
+  { slug: "porsche", h2: true, h3: true, h4: true },
+  { slug: "ram", h2: true, h3: false, h4: true },
+  { slug: "saab", h2: true, h3: true, h4: true },
+  { slug: "saleen", h2: true, h3: true, h4: true },
+  { slug: "saturn", h2: true, h3: true, h4: true },
+  { slug: "scion", h2: true, h3: true, h4: true },
+  { slug: "shelby", h2: true, h3: true, h4: true },
+  { slug: "smart", h2: true, h3: true, h4: true },
+  { slug: "suzuki", h2: true, h3: true, h4: true },
+  { slug: "tesla", h2: true, h3: false, h4: true },
+  { slug: "tesla-vehicle-recalls-history-check", h2: false, h3: false, h4: true },
+  { slug: "triumph", h2: true, h3: true, h4: true, h4note: "8 recall titles missing" },
+  { slug: "volkswagen", h2: true, h3: true, h4: true },
+  { slug: "volvo", h2: true, h3: true, h4: true },
+  { slug: "yamaha", h2: true, h3: true, h4: true }
+];
+const wpBase = "https://detailedvehiclehistory.com/vehicle-recalls/";
+const payloadBase = "https://dvh.vehiclehistory.report/vehicle-recalls/";
+const svgCheck = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8.5l3.5 3.5 7-7"/></svg>`;
+const svgFail = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 4l8 8M12 4l-8 8"/></svg>`;
+const svgExt = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 9v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M9 2h5v5M6.5 9.5 14 2"/></svg>`;
+const special = { bmw: "BMW", gmc: "GMC", mg: "MG", amc: "AMC" };
+function titleCase(slug) { if (special[slug]) return special[slug]; return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "); }
+function isOk(d) { return d.h2 && d.h3 && d.h4; }
+let currentFilter = "all";
+function getFiltered(items) {
+  if (currentFilter === "clean") return items.filter(d => isOk(d));
+  if (currentFilter === "issues") return items.filter(d => !isOk(d));
+  return items;
+}
+function hBadge(ok) { return ok ? `<span class="badge badge-green">${svgCheck}</span>` : `<span class="badge badge-red">${svgFail}</span>`; }
+function renderTable(items) {
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
+  if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  tbody.innerHTML = items.map((d, i) => `<tr data-slug="${d.slug}" class="${isOk(d) ? '' : 'has-issues'}"><td class="num">${i+1}</td><td><span class="brand-name">${titleCase(d.slug)}</span></td><td class="center">${isOk(d) ? `<span class="badge badge-green">${svgCheck} Pass</span>` : `<span class="badge badge-red">${svgFail} Fail</span>`}</td><td class="center">${hBadge(d.h2)}</td><td class="center">${hBadge(d.h3)}</td><td class="center">${d.h4note ? `<span class="heading-detail"><span class="badge badge-amber">${svgCheck}</span><span class="tooltip"><div class="tooltip-row"><span class="t-val warn">${d.h4note}</span></div></span></span>` : hBadge(d.h4)}</td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`).join("");
+}
+function renderCards(items) {
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
+  if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  grid.innerHTML = items.map(d => `<div class="card ${isOk(d) ? '' : 'has-issues'}" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div></div><div class="card-stats"><div class="card-stat ${d.h2 ? 'ok' : 'warn'}"><div class="cs-val">${d.h2 ? svgCheck : svgFail}</div><div class="cs-label">H2</div></div><div class="card-stat ${d.h3 ? 'ok' : 'warn'}"><div class="cs-val">${d.h3 ? svgCheck : svgFail}</div><div class="cs-label">H3</div></div><div class="card-stat ${d.h4 ? 'ok' : 'warn'}"><div class="cs-val">${d.h4 ? svgCheck : svgFail}</div><div class="cs-label">H4</div></div></div>${!isOk(d) ? `<div class="card-issue"><strong>Failed:</strong> ${!d.h2 ? 'H2 ' : ''}${!d.h3 ? 'H3 ' : ''}${!d.h4 ? 'H4' : ''} mismatch</div>` : d.h4note ? `<div class="card-issue"><strong>Note:</strong> ${d.h4note}</div>` : ''}<div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`).join("");
+}
+function render() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  let items = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q)) : DATA;
+  items = getFiltered(items); renderTable(items); renderCards(items);
+}
+document.getElementById("search").addEventListener("input", render);
+function setFilter(filter) { currentFilter = filter; document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter)); render(); }
+function setView(view) {
+  document.getElementById("btn-table").classList.toggle("active", view === "table");
+  document.getElementById("btn-cards").classList.toggle("active", view === "cards");
+  document.getElementById("view-table").classList.toggle("hidden", view !== "table");
+  document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
+}
+render();
+</script>
+</body>
+</html>

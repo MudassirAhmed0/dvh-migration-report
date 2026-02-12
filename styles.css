@@ -701,6 +701,12 @@ td.num {
   border: 1px solid var(--amber-glow);
 }
 
+.badge-red {
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid var(--red-glow);
+}
+
 .badge-accent {
   background: var(--accent-soft);
   color: var(--accent-light);
