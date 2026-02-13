@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Window Sticker — Migration QA Report</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="accent-stripe"></div>
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L3 14M3 2l10 12"/></svg> Migration QA Report</div>
+    <h1>Window Sticker — Brand Pages</h1>
+    <p>WordPress to Payload CMS migration <span>&middot;</span> 90 brands <span>&middot;</span> Generated Feb 13, 2026</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card green"><div class="label">Passed</div><div class="value">74/90</div><div class="sub">All headings match</div></div>
+  <div class="stat-card amber"><div class="label">Issues</div><div class="value">16</div><div class="sub">4 significant, 12 minor</div></div>
+  <div class="stat-card blue"><div class="label">Title &amp; Description</div><div class="value">100%</div><div class="sub">All match WordPress</div></div>
+  <div class="stat-card accent"><div class="label">Pass Rate</div><div class="value">82%</div><div class="sub">Across all brands</div></div>
+</div>
+
+<div class="banners">
+  <div class="banner banner-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+    <div class="b-content">
+      <div class="b-title">4 brands with significant heading gaps</div>
+      <div class="b-text">
+        &bull; <strong>Plymouth</strong> — 12 headings not extracted<br>
+        &bull; <strong>Aston Martin</strong> — 9 headings not extracted<br>
+        &bull; <strong>Mercedes-Benz</strong> — 5 headings not extracted<br>
+        &bull; <strong>Lamborghini</strong> — 4 headings not extracted
+      </div>
+    </div>
+  </div>
+  <div class="banner banner-info">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <div class="b-content">
+      <div class="b-title">12 brands with minor heading diffs (1–3 headings)</div>
+      <div class="b-text">
+        Mini (3), Freightliner (2), Ferrari (2 text changed), Tesla (1 text changed), AM General (1), Bugatti (1), Daewoo (1), Hummer (1), Infiniti (1), Isuzu (1), Karma (1), Scion (1)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="Search brands..." autocomplete="off"></div>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All <span class="count">90</span></button>
+    <button class="filter-btn" data-filter="clean" onclick="setFilter('clean')">Passed <span class="count">74</span></button>
+    <button class="filter-btn" data-filter="issues" onclick="setFilter('issues')">Issues <span class="count">16</span></button>
+  </div>
+  <div class="view-toggle">
+    <button id="btn-table" class="active" onclick="setView('table')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Table</button>
+    <button id="btn-cards" onclick="setView('cards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Cards</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="view-table" class="table-wrap">
+    <table><thead><tr><th>#</th><th>Brand</th><th>WP ID</th><th class="center">Status</th><th class="center">Title</th><th class="center">Description</th><th class="center">Headings</th><th>Compare</th></tr></thead><tbody id="table-body"></tbody></table>
+    <div class="no-results hidden" id="no-results-table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No brands match your search</p></div>
+  </div>
+  <div id="view-cards" class="cards-grid hidden"></div>
+  <div class="no-results hidden" id="no-results-cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No brands match your search</p></div>
+</div>
+
+<script>
+const DATA = [
+  { slug: "acura", wpId: 150985, ok: true },
+  { slug: "alfa-romeo", wpId: 150994, ok: true },
+  { slug: "am-general", wpId: 151389, ok: false, issue: "1 heading not extracted" },
+  { slug: "amc", wpId: 151398, ok: true },
+  { slug: "aston-martin", wpId: 151264, ok: false, issue: "9 headings not extracted" },
+  { slug: "audi", wpId: 150993, ok: true },
+  { slug: "austin-healey", wpId: 151265, ok: true },
+  { slug: "avanti-motors", wpId: 151383, ok: true },
+  { slug: "bentley", wpId: 150995, ok: true },
+  { slug: "bmw", wpId: 150986, ok: true },
+  { slug: "bricklin", wpId: 151266, ok: true },
+  { slug: "bugatti", wpId: 151267, ok: false, issue: "1 heading not extracted" },
+  { slug: "buick", wpId: 151262, ok: true },
+  { slug: "cadillac", wpId: 151025, ok: true },
+  { slug: "chevrolet", wpId: 151026, ok: true },
+  { slug: "chrysler", wpId: 151027, ok: true },
+  { slug: "daewoo", wpId: 151268, ok: false, issue: "1 heading not extracted" },
+  { slug: "daihatsu", wpId: 151306, ok: true },
+  { slug: "datsun", wpId: 151319, ok: true },
+  { slug: "dodge", wpId: 151028, ok: true },
+  { slug: "eagle", wpId: 151331, ok: true },
+  { slug: "ferrari", wpId: 151307, ok: false, issue: "2 headings text changed" },
+  { slug: "fiat", wpId: 151029, ok: true },
+  { slug: "fisker", wpId: 151384, ok: true },
+  { slug: "ford", wpId: 150661, ok: true },
+  { slug: "freightliner", wpId: 151030, ok: false, issue: "2 headings not extracted" },
+  { slug: "genesis", wpId: 151321, ok: true },
+  { slug: "geo", wpId: 151322, ok: true },
+  { slug: "gmc", wpId: 150478, ok: true },
+  { slug: "harley-davidson", wpId: 151034, ok: true },
+  { slug: "hino", wpId: 151393, ok: true },
+  { slug: "honda", wpId: 151035, ok: true },
+  { slug: "hummer", wpId: 151263, ok: false, issue: "1 heading not extracted" },
+  { slug: "hyundai", wpId: 151036, ok: true },
+  { slug: "infiniti", wpId: 151037, ok: false, issue: "1 heading not extracted" },
+  { slug: "international", wpId: 151436, ok: true },
+  { slug: "isuzu", wpId: 151323, ok: false, issue: "1 heading not extracted" },
+  { slug: "jaguar", wpId: 151092, ok: true },
+  { slug: "jeep", wpId: 151213, ok: true },
+  { slug: "karma", wpId: 241241, ok: false, issue: "1 heading not extracted" },
+  { slug: "kawasaki", wpId: 151081, ok: true },
+  { slug: "kenworth", wpId: 151392, ok: true },
+  { slug: "kia", wpId: 151217, ok: true },
+  { slug: "koenigsegg", wpId: 151433, ok: true },
+  { slug: "lamborghini", wpId: 151324, ok: false, issue: "4 headings not extracted" },
+  { slug: "land-rover", wpId: 151214, ok: true },
+  { slug: "lexus", wpId: 151212, ok: true },
+  { slug: "lincoln", wpId: 151382, ok: true },
+  { slug: "lordstown", wpId: 241618, ok: true },
+  { slug: "lotus", wpId: 151326, ok: true },
+  { slug: "lucid", wpId: 239212, ok: true },
+  { slug: "lyons", wpId: 151143, ok: true },
+  { slug: "maserati", wpId: 151325, ok: true },
+  { slug: "maybach", wpId: 151086, ok: true },
+  { slug: "mazda", wpId: 151083, ok: true },
+  { slug: "mclaren", wpId: 151101, ok: true },
+  { slug: "mercedes-benz", wpId: 150992, ok: false, issue: "5 headings not extracted" },
+  { slug: "mercury", wpId: 151327, ok: true },
+  { slug: "mg", wpId: 151336, ok: true },
+  { slug: "mini", wpId: 151084, ok: false, issue: "3 headings not extracted" },
+  { slug: "mitsubishi", wpId: 151216, ok: true },
+  { slug: "mitsuoka", wpId: 151206, ok: true },
+  { slug: "morgan", wpId: 151088, ok: true },
+  { slug: "mosler", wpId: 151144, ok: true },
+  { slug: "nissan", wpId: 150987, ok: true },
+  { slug: "oldsmobile", wpId: 151089, ok: true },
+  { slug: "panoz", wpId: 151390, ok: true },
+  { slug: "peterbilt", wpId: 151142, ok: true },
+  { slug: "plymouth", wpId: 151136, ok: false, issue: "12 headings not extracted" },
+  { slug: "polestar", wpId: 151137, ok: true },
+  { slug: "pontiac", wpId: 151138, ok: true },
+  { slug: "porsche", wpId: 151218, ok: true },
+  { slug: "ram", wpId: 151139, ok: true },
+  { slug: "rivian", wpId: 242172, ok: true },
+  { slug: "rolls-royce", wpId: 151381, ok: true },
+  { slug: "saab", wpId: 151208, ok: true },
+  { slug: "saleen", wpId: 151406, ok: true },
+  { slug: "saturn", wpId: 151407, ok: true },
+  { slug: "scion", wpId: 151140, ok: false, issue: "1 heading not extracted" },
+  { slug: "shelby", wpId: 151391, ok: true },
+  { slug: "smart", wpId: 151141, ok: true },
+  { slug: "spyker", wpId: 242674, ok: true },
+  { slug: "subaru", wpId: 151215, ok: true },
+  { slug: "suzuki", wpId: 151261, ok: true },
+  { slug: "tesla", wpId: 151085, ok: false, issue: "1 heading text changed" },
+  { slug: "toyota", wpId: 150991, ok: true },
+  { slug: "triumph", wpId: 151435, ok: true },
+  { slug: "volkswagen", wpId: 151082, ok: true },
+  { slug: "volvo", wpId: 151145, ok: true },
+  { slug: "yamaha", wpId: 151207, ok: true }
+];
+const wpBase = "https://detailedvehiclehistory.com/window-sticker/";
+const payloadBase = "https://dvh.vehiclehistory.report/window-sticker/";
+const svgCheck = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 8.5l3.5 3.5 7-7"/></svg>`;
+const svgWarn = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M8 5v4M8 11h.01"/></svg>`;
+const svgFail = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 4l8 8M12 4l-8 8"/></svg>`;
+const svgExt = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 9v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4M9 2h5v5M6.5 9.5 14 2"/></svg>`;
+const special = { bmw: "BMW", gmc: "GMC", amc: "AMC", mg: "MG" };
+function titleCase(slug) { if (special[slug]) return special[slug]; return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "); }
+let currentFilter = "all";
+function getFiltered(items) {
+  if (currentFilter === "clean") return items.filter(d => d.ok);
+  if (currentFilter === "issues") return items.filter(d => !d.ok);
+  return items;
+}
+function renderTable(items) {
+  const tbody = document.getElementById("table-body"), noRes = document.getElementById("no-results-table");
+  if (!items.length) { tbody.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  tbody.innerHTML = items.map((d, i) => {
+    const statusBadge = `<span class="badge badge-green">${svgCheck} Migrated</span>`;
+    const titleBadge = `<span class="badge badge-green">${svgCheck} Match</span>`;
+    const descBadge = `<span class="badge badge-green">${svgCheck} Match</span>`;
+    const headingBadge = d.ok
+      ? `<span class="badge badge-green">${svgCheck} Pass</span>`
+      : `<span class="heading-detail"><span class="badge badge-amber">${svgWarn} Fail</span><span class="tooltip"><div class="tooltip-row"><span class="t-val warn">${d.issue}</span></div></span></span>`;
+    return `<tr data-slug="${d.slug}" class="${d.ok ? '' : 'has-issues'}"><td class="num">${i+1}</td><td><span class="brand-name">${titleCase(d.slug)}</span></td><td><span class="wp-id">${d.wpId}</span></td><td class="center">${statusBadge}</td><td class="center">${titleBadge}</td><td class="center">${descBadge}</td><td class="center">${headingBadge}</td><td><div class="link-group"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WP ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></td></tr>`;
+  }).join("");
+}
+function renderCards(items) {
+  const grid = document.getElementById("view-cards"), noRes = document.getElementById("no-results-cards");
+  if (!items.length) { grid.innerHTML = ""; noRes.classList.remove("hidden"); return; }
+  noRes.classList.add("hidden");
+  grid.innerHTML = items.map(d => {
+    const hIcon = d.ok ? svgCheck : svgWarn;
+    const hLabel = d.ok ? "Pass" : "Fail";
+    return `<div class="card ${d.ok ? '' : 'has-issues'}" data-slug="${d.slug}"><div class="card-top"><div class="card-title">${titleCase(d.slug)}</div><div class="card-wpid">WP #${d.wpId}</div></div><div class="card-stats"><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Title</div></div><div class="card-stat ok"><div class="cs-val">${svgCheck}</div><div class="cs-label">Desc</div></div><div class="card-stat ${d.ok ? 'ok' : 'warn'}"><div class="cs-val">${hIcon}</div><div class="cs-label">${hLabel}</div></div></div>${d.issue ? `<div class="card-issue"><strong>Note:</strong> ${d.issue}</div>` : ''}<div class="card-links"><a class="link-btn link-wp" href="${wpBase}${d.slug}" target="_blank" rel="noopener">WordPress ${svgExt}</a><a class="link-btn link-payload" href="${payloadBase}${d.slug}" target="_blank" rel="noopener">Payload ${svgExt}</a></div></div>`;
+  }).join("");
+}
+function render() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  let items = q ? DATA.filter(d => titleCase(d.slug).toLowerCase().includes(q) || d.slug.includes(q) || String(d.wpId).includes(q)) : DATA;
+  items = getFiltered(items); renderTable(items); renderCards(items);
+}
+document.getElementById("search").addEventListener("input", render);
+function setFilter(filter) { currentFilter = filter; document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter)); render(); }
+function setView(view) {
+  document.getElementById("btn-table").classList.toggle("active", view === "table");
+  document.getElementById("btn-cards").classList.toggle("active", view === "cards");
+  document.getElementById("view-table").classList.toggle("hidden", view !== "table");
+  document.getElementById("view-cards").classList.toggle("hidden", view !== "cards");
+}
+render();
+</script>
+</body>
+</html>
